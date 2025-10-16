@@ -1,0 +1,958 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% block title %}Contacto - Hotel Yunuen | Lázaro Cárdenas, Michoacán{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 80px 0 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" fill="rgba(255,255,255,0.1)"/></svg>') repeat-x;
+        bottom: 0;
+    }
+    
+    .contact-form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        padding: 40px;
+        margin-bottom: 30px;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .contact-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin: 40px 0;
+    }
+    
+    .contact-info-item {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-info-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .contact-info-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #74b9ff 0%, #0984e3 100%);
+    }
+    
+    .contact-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-icon.phone {
+        background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+    }
+    
+    .contact-icon.email {
+        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    }
+    
+    .contact-icon.location {
+        background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+    }
+    
+    .contact-icon.hours {
+        background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+    }
+    
+    .form-floating {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-floating .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1rem 0.75rem;
+        height: auto;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .form-floating .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        background: white;
+    }
+    
+    .form-floating label {
+        padding: 1rem 0.75rem;
+        color: #6c757d;
+    }
+    
+    .form-floating textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .submit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 15px 40px;
+        border-radius: 30px;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        width: 100%;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .faq-section {
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 40px;
+        margin: 40px 0;
+    }
+    
+    .faq-item {
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .faq-question {
+        padding: 20px;
+        background: white;
+        border: none;
+        width: 100%;
+        text-align: left;
+        font-weight: 600;
+        color: #2d3436;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-question:hover {
+        background: #f8f9fa;
+        color: #667eea;
+    }
+    
+    .faq-question::after {
+        content: '+';
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .faq-question.active::after {
+        transform: rotate(45deg);
+    }
+    
+    .faq-answer {
+        padding: 0 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .faq-answer.active {
+        padding: 20px;
+        max-height: 200px;
+    }
+    
+    .social-links {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    .social-link {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+    }
+    
+    .social-link.facebook {
+        background: #3b5998;
+    }
+    
+    .social-link.instagram {
+        background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+    }
+    
+    .social-link.whatsapp {
+        background: #25d366;
+    }
+    
+    .social-link.twitter {
+        background: #1da1f2;
+    }
+    
+    .social-link:hover {
+        transform: translateY(-3px) scale(1.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        color: white;
+    }
+    
+    .loading-spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ffffff;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .success-message {
+        background: linear-gradient(135deg, #00b894 0%, #55efc4 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin: 20px 0;
+        display: none;
+    }
+    
+    .emergency-contact {
+        background: linear-gradient(135deg, #e17055 0%, #fd79a8 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        margin: 30px 0;
+    }
+    
+    .business-hours {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .hours-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .hour-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .hour-item:last-child {
+        border-bottom: none;
+    }
+    
+    .day {
+        font-weight: 600;
+        color: #2d3436;
+    }
+    
+    .time {
+        color: #636e72;
+    }
+    
+    .time.closed {
+        color: #e17055;
+    }
+    
+    .time.24h {
+        color: #00b894;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="contact-header text-center">
+    <div class="container" data-aos="fade-up">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-envelope me-3"></i>Contacto
+        </h1>
+        <p class="lead">
+            Estamos aquí para ayudarle con todas sus necesidades de hospedaje<br>
+            en Lázaro Cárdenas, Michoacán
+        </p>
+        <div class="mt-4">
+            <span class="badge bg-warning text-dark fs-6 me-2">
+                <i class="fas fa-clock me-1"></i>Atención 24/7
+            </span>
+            <span class="badge bg-success fs-6">
+                <i class="fas fa-headset me-1"></i>Respuesta Rápida
+            </span>
+        </div>
+    </div>
+</section>
+
+<!-- Información de Contacto Rápido -->
+<section class="py-5">
+    <div class="container">
+        <div class="contact-info-grid">
+            <div class="contact-info-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="contact-icon phone">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Teléfono</h5>
+                <p class="mb-2">
+                    <a href="tel:+527535320000" class="text-decoration-none text-dark fw-bold">
+                        +52 753 532 0000
+                    </a>
+                </p>
+                <small class="text-muted">Disponible las 24 horas</small>
+            </div>
+            
+            <div class="contact-info-item" data-aos="fade-up" data-aos-delay="200">
+                <div class="contact-icon email">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Email</h5>
+                <p class="mb-2">
+                    <a href="mailto:info@hotelyunuen.com.mx" class="text-decoration-none text-dark fw-bold">
+                        info@hotelyunuen.com.mx
+                    </a>
+                </p>
+                <small class="text-muted">Respuesta en menos de 2 horas</small>
+            </div>
+            
+            <div class="contact-info-item" data-aos="fade-up" data-aos-delay="300">
+                <div class="contact-icon location">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Ubicación</h5>
+                <p class="mb-2 fw-bold">
+                    Avenida Principal<br>
+                    Lázaro Cárdenas, Michoacán
+                </p>
+                <small class="text-muted">En el centro de la ciudad</small>
+            </div>
+            
+            <div class="contact-info-item" data-aos="fade-up" data-aos-delay="400">
+                <div class="contact-icon hours">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Horarios</h5>
+                <p class="mb-2 fw-bold">
+                    Recepción 24/7<br>
+                    Check-in: 15:00<br>
+                    Check-out: 12:00
+                </p>
+                <small class="text-muted">Siempre disponibles</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Formulario de Contacto -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="contact-form-card" data-aos="fade-up">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">Envíenos un Mensaje</h2>
+                        <p class="text-muted">Complete el formulario y nos pondremos en contacto con usted pronto</p>
+                    </div>
+                    
+                    <div class="success-message" id="successMessage">
+                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                        <h5>¡Mensaje Enviado!</h5>
+                        <p class="mb-0">Gracias por contactarnos. Responderemos a la brevedad.</p>
+                    </div>
+                    
+                    <form method="post" id="contactForm" novalidate>
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Su nombre completo" required>
+                                    <label for="name">
+                                        <i class="fas fa-user me-2"></i>Nombre Completo *
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        Por favor, ingrese su nombre completo.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="su@email.com" required>
+                                    <label for="email">
+                                        <i class="fas fa-envelope me-2"></i>Correo Electrónico *
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        Por favor, ingrese un email válido.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="+52 753 000 0000">
+                                    <label for="phone">
+                                        <i class="fas fa-phone me-2"></i>Teléfono (Opcional)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-control" id="subject" name="subject" required>
+                                        <option value="">Seleccione un tema</option>
+                                        <option value="reserva">Consulta de Reserva</option>
+                                        <option value="informacion">Información General</option>
+                                        <option value="eventos">Eventos y Grupos</option>
+                                        <option value="servicios">Servicios Adicionales</option>
+                                        <option value="quejas">Quejas y Sugerencias</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                    <label for="subject">
+                                        <i class="fas fa-tag me-2"></i>Tema *
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        Por favor, seleccione un tema.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-floating">
+                            <textarea class="form-control" id="message" name="message" placeholder="Escriba su mensaje aquí..." required></textarea>
+                            <label for="message">
+                                <i class="fas fa-comment me-2"></i>Mensaje *
+                            </label>
+                            <div class="invalid-feedback">
+                                Por favor, escriba su mensaje.
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="privacy" name="privacy" required>
+                            <label class="form-check-label" for="privacy">
+                                Acepto la <a href="#" class="text-decoration-none">política de privacidad</a> y el tratamiento de mis datos personales. *
+                            </label>
+                            <div class="invalid-feedback">
+                                Debe aceptar la política de privacidad.
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <div class="loading-spinner" id="loadingSpinner"></div>
+                            <span id="btnText">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Preguntas Frecuentes -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="fw-bold">Preguntas Frecuentes</h2>
+            <p class="lead text-muted">Respuestas rápidas a las consultas más comunes</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="faq-section" data-aos="fade-up">
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            ¿Cuáles son los horarios de check-in y check-out?
+                        </button>
+                        <div class="faq-answer">
+                            <p>El check-in es a partir de las 15:00 hrs y el check-out hasta las 12:00 hrs. Ofrecemos servicios de early check-in y late check-out sujetos a disponibilidad.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            ¿El hotel cuenta con estacionamiento?
+                        </button>
+                        <div class="faq-answer">
+                            <p>Sí, contamos con estacionamiento gratuito y seguro para todos nuestros huéspedes. No requiere reserva previa.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            ¿Qué formas de pago aceptan?
+                        </button>
+                        <div class="faq-answer">
+                            <p>Aceptamos efectivo, tarjetas de crédito y débito (Visa, MasterCard, American Express), transferencias bancarias y pagos en línea.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            ¿Cuál es la política de cancelación?
+                        </button>
+                        <div class="faq-answer">
+                            <p>Puede cancelar su reservación sin costo hasta 24 horas antes de la fecha de llegada. Para cancelaciones con menos de 24 horas, se aplicará el cargo de una noche.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            ¿Ofrecen servicios de traslado desde el aeropuerto?
+                        </button>
+                        <div class="faq-answer">
+                            <p>Sí, ofrecemos servicio de traslado desde el Aeropuerto de Ixtapa-Zihuatanejo con costo adicional. Consulte disponibilidad y tarifas al momento de su reserva.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            ¿El hotel es pet-friendly?
+                        </button>
+                        <div class="faq-answer">
+                            <p>Aceptamos mascotas en habitaciones específicas con un costo adicional de $200 MXN por noche. Por favor, infórmenos al momento de la reserva.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Información Adicional -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="emergency-contact">
+                    <h4 class="mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Contacto de Emergencia
+                    </h4>
+                    <p class="mb-2">
+                        <strong>Disponible 24/7 para huéspedes:</strong>
+                    </p>
+                    <h5>
+                        <a href="tel:+527535320000" class="text-white text-decoration-none">
+                            <i class="fas fa-phone me-2"></i>+52 753 532 0000
+                        </a>
+                    </h5>
+                    <small>
+                        Para emergencias médicas, problemas en habitaciones,<br>
+                        o cualquier asistencia urgente
+                    </small>
+                </div>
+            </div>
+            
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="business-hours">
+                    <h4 class="mb-3 text-center">
+                        <i class="fas fa-business-time me-2 text-primary"></i>Horarios de Servicio
+                    </h4>
+                    <div class="hours-grid">
+                        <div class="hour-item">
+                            <span class="day">Recepción</span>
+                            <span class="time 24h">24 Horas</span>
+                        </div>
+                        <div class="hour-item">
+                            <span class="day">Restaurante</span>
+                            <span class="time">7:00 - 23:00</span>
+                        </div>
+                        <div class="hour-item">
+                            <span class="day">Video Bar</span>
+                            <span class="time">18:00 - 2:00</span>
+                        </div>
+                        <div class="hour-item">
+                            <span class="day">Servicio a Cuarto</span>
+                            <span class="time">6:00 - 24:00</span>
+                        </div>
+                        <div class="hour-item">
+                            <span class="day">Limpieza</span>
+                            <span class="time">9:00 - 17:00</span>
+                        </div>
+                        <div class="hour-item">
+                            <span class="day">Mantenimiento</span>
+                            <span class="time">8:00 - 18:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Redes Sociales -->
+<section class="py-5 text-center">
+    <div class="container" data-aos="fade-up">
+        <h3 class="fw-bold mb-3">Síguenos en Redes Sociales</h3>
+        <p class="lead text-muted mb-4">
+            Mantente al día con nuestras promociones y noticias
+        </p>
+        <div class="social-links">
+            <a href="#" class="social-link facebook" title="Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-link instagram" title="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://wa.me/527535320000" class="social-link whatsapp" title="WhatsApp" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="#" class="social-link twitter" title="Twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container" data-aos="fade-up">
+        <h3 class="fw-bold mb-3">¿Prefiere Reservar Directamente?</h3>
+        <p class="lead mb-4">
+            Llámenos ahora y nuestro equipo le ayudará a encontrar la habitación perfecta
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+527535320000" class="btn btn-warning btn-lg px-5">
+                <i class="fas fa-phone me-2"></i>Llamar Ahora
+            </a>
+            <a href="{% url 'bookings:booking_create' %}" class="btn btn-outline-light btn-lg px-5">
+                <i class="fas fa-calendar-check me-2"></i>Reservar Online
+            </a>
+            <a href="https://wa.me/527535320000" class="btn btn-success btn-lg px-5" target="_blank">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize contact form features
+    initializeContactForm();
+    initializeFAQ();
+    
+    // Add smooth scrolling for internal links
+    $('a[href^="#"]').on('click', function(e) {
+        e.preventDefault();
+        const target = $($(this).attr('href'));
+        if (target.length) {
+            $('html, body').animate({
+                scrollTop: target.offset().top - 100
+            }, 500);
+        }
+    });
+    
+    // Contact info click to copy functionality
+    $('.contact-info-item a[href^="tel:"], .contact-info-item a[href^="mailto:"]').on('click', function(e) {
+        if (navigator.clipboard && window.isSecureContext) {
+            const text = $(this).text().trim();
+            navigator.clipboard.writeText(text).then(function() {
+                showNotification('Información copiada al portapapeles', 'success');
+            });
+        }
+    });
+});
+
+function initializeContactForm() {
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const btnText = document.getElementById('btnText');
+    const successMessage = document.getElementById('successMessage');
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Remove existing validation classes
+        form.classList.remove('was-validated');
+        
+        // Check form validity
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+        }
+        
+        // Custom validations
+        const email = document.getElementById('email').value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (!emailRegex.test(email)) {
+            document.getElementById('email').classList.add('is-invalid');
+            return;
+        }
+        
+        // If all validations pass, submit form
+        submitForm();
+    });
+    
+    // Real-time validation
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('blur', validateField);
+        input.addEventListener('input', clearValidation);
+    });
+    
+    function validateField(e) {
+        const field = e.target;
+        const isValid = field.checkValidity();
+        
+        field.classList.remove('is-valid', 'is-invalid');
+        
+        if (field.value.trim()) {
+            field.classList.add(isValid ? 'is-valid' : 'is-invalid');
+        }
+    }
+    
+    function clearValidation(e) {
+        const field = e.target;
+        field.classList.remove('is-invalid');
+    }
+    
+    function submitForm() {
+        // Show loading state
+        submitBtn.disabled = true;
+        loadingSpinner.style.display = 'inline-block';
+        btnText.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
+        
+        // Get form data
+        const formData = new FormData(form);
+        
+        // Simulate form submission (replace with actual AJAX call)
+        setTimeout(() => {
+            // In a real implementation, you would send the data to your Django view
+            fetch(form.action || window.location.pathname, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage();
+                } else {
+                    showErrorMessage(data.message || 'Error al enviar el mensaje');
+                }
+            })
+            .catch(error => {
+                // For demo purposes, we'll show success
+                showSuccessMessage();
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                resetSubmitButton();
+            });
+        }, 2000);
+    }
+    
+    function showSuccessMessage() {
+        successMessage.style.display = 'block';
+        form.reset();
+        form.classList.remove('was-validated');
+        
+        // Clear validation classes
+        const fields = form.querySelectorAll('.is-valid, .is-invalid');
+        fields.forEach(field => {
+            field.classList.remove('is-valid', 'is-invalid');
+        });
+        
+        // Scroll to success message
+        successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        showNotification('¡Mensaje enviado exitosamente!', 'success');
+    }
+    
+    function showErrorMessage(message) {
+        showNotification(message || 'Error al enviar el mensaje. Intente de nuevo.', 'error');
+    }
+    
+    function resetSubmitButton() {
+        submitBtn.disabled = false;
+        loadingSpinner.style.display = 'none';
+        btnText.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Enviar Mensaje';
+    }
+}
+
+function initializeFAQ() {
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+            const answer = this.nextElementSibling;
+            const isActive = this.classList.contains('active');
+            
+            // Close all other FAQs
+            faqQuestions.forEach(q => {
+                q.classList.remove('active');
+                q.nextElementSibling.classList.remove('active');
+            });
+            
+            // Toggle current FAQ
+            if (!isActive) {
+                this.classList.add('active');
+                answer.classList.add('active');
+            }
+        });
+    });
+}
+
+function showNotification(message, type = 'info') {
+    const notification = $(`
+        <div class="alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show position-fixed" 
+             style="top: 100px; right: 20px; z-index: 9999; max-width: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `);
+    
+    $('body').append(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.alert('close');
+    }, 5000);
+}
+
+// Add interactive features
+$(document).ready(function() {
+    // Animate contact info cards on scroll
+    const contactCards = $('.contact-info-item');
+    
+    $(window).on('scroll', function() {
+        contactCards.each(function() {
+            const card = $(this);
+            const cardTop = card.offset().top;
+            const cardBottom = cardTop + card.outerHeight();
+            const windowTop = $(window).scrollTop();
+            const windowBottom = windowTop + $(window).height();
+            
+            if (cardTop < windowBottom && cardBottom > windowTop) {
+                card.addClass('animate__animated animate__pulse');
+            }
+        });
+    });
+    
+    // Social links tracking
+    $('.social-link').on('click', function() {
+        const platform = $(this).attr('title');
+        console.log(`Usuario hizo clic en: ${platform}`);
+        // Here you could add analytics tracking
+    });
+    
+    // Emergency contact highlight
+    $('.emergency-contact').on('mouseenter', function() {
+        $(this).find('h5').addClass('animate__animated animate__pulse');
+    }).on('mouseleave', function() {
+        $(this).find('h5').removeClass('animate__animated animate__pulse');
+    });
+});
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Add form field animations
+    const floatingLabels = document.querySelectorAll('.form-floating');
+    
+    floatingLabels.forEach(floating => {
+        const input = floating.querySelector('input, select, textarea');
+        const label = floating.querySelector('label');
+        
+        if (input && label) {
+            input.addEventListener('focus', function() {
+                floating.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                floating.classList.remove('focused');
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

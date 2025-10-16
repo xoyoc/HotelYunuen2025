@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% block title %}Galería - Hotel Yunuen | Lázaro Cárdenas{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gallery-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 80px 0 40px;
+    }
+    
+    .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 30px;
+        background: #f8f9fa;
+    }
+    
+    .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    .gallery-item img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .gallery-item:hover img {
+        transform: scale(1.05);
+    }
+    
+    .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        color: white;
+        padding: 30px 20px 20px;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .gallery-item:hover .gallery-overlay {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    
+    .filter-btn {
+        margin: 5px;
+        border-radius: 25px;
+        padding: 8px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-btn.active {
+        background: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+    
+    .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: relative;
+    }
+    
+    .lightbox-content img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+    
+    .lightbox-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        color: white;
+        font-size: 30px;
+        cursor: pointer;
+        background: rgba(0,0,0,0.5);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.5);
+        color: white;
+        border: none;
+        font-size: 24px;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    
+    .lightbox-prev {
+        left: -60px;
+    }
+    
+    .lightbox-next {
+        right: -60px;
+    }
+    
+    .no-images-message {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="gallery-header text-center">
+    <div class="container" data-aos="fade-up">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-images me-3"></i>Galería de Hotel Yunuen
+        </h1>
+        <p class="lead">
+            Descubra nuestras instalaciones, habitaciones y los hermosos espacios que hacen especial su estancia
+        </p>
+    </div>
+</section>
+
+<!-- Filtros -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="text-center" data-aos="fade-up">
+            <button class="btn btn-outline-primary filter-btn active" data-filter="*">
+                <i class="fas fa-th me-1"></i>Todas las Imágenes
+            </button>
+            <button class="btn btn-outline-primary filter-btn" data-filter=".habitaciones">
+                <i class="fas fa-bed me-1"></i>Habitaciones
+            </button>
+            <button class="btn btn-outline-primary filter-btn" data-filter=".instalaciones">
+                <i class="fas fa-building me-1"></i>Instalaciones
+            </button>
+            <button class="btn btn-outline-primary filter-btn" data-filter=".restaurante">
+                <i class="fas fa-utensils me-1"></i>Restaurante
+            </button>
+            <button class="btn btn-outline-primary filter-btn" data-filter=".exterior">
+                <i class="fas fa-tree me-1"></i>Exteriores
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Galería -->
+<section class="py-5">
+    <div class="container">
+        {% if gallery_items %}
+        <div class="row" id="gallery-container">
+            {% for item in gallery_items %}
+            <div class="col-lg-4 col-md-6 gallery-item-container habitaciones" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                <div class="gallery-item" onclick="openLightbox({{ forloop.counter0 }})">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+                    {% else %}
+                    <div class="d-flex align-items-center justify-content-center bg-secondary text-white" style="height: 250px;">
+                        <i class="fas fa-image fa-3x"></i>
+                    </div>
+                    {% endif %}
+                    <div class="gallery-overlay">
+                        <h5 class="fw-bold">{{ item.title }}</h5>
+                        <p class="mb-2 small">{{ item.category }}</p>
+                        <p class="mb-0 text-warning">
+                            <i class="fas fa-dollar-sign me-1"></i>{{ item.price }} MXN / noche
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Imágenes adicionales de ejemplo -->
+        <div class="row" id="additional-gallery">
+            <div class="col-lg-4 col-md-6 gallery-item-container instalaciones" data-aos="fade-up">
+                <div class="gallery-item">
+                    <div class="d-flex align-items-center justify-content-center bg-primary text-white" style="height: 250px;">
+                        <div class="text-center">
+                            <i class="fas fa-swimming-pool fa-3x mb-2"></i>
+                            <p class="mb-0">Área de Alberca</p>
+                        </div>
+                    </div>
+                    <div class="gallery-overlay">
+                        <h5 class="fw-bold">Área de Alberca</h5>
+                        <p class="mb-0 small">Instalaciones</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item-container restaurante" data-aos="fade-up" data-aos-delay="100">
+                <div class="gallery-item">
+                    <div class="d-flex align-items-center justify-content-center bg-success text-white" style="height: 250px;">
+                        <div class="text-center">
+                            <i class="fas fa-utensils fa-3x mb-2"></i>
+                            <p class="mb-0">Restaurante</p>
+                        </div>
+                    </div>
+                    <div class="gallery-overlay">
+                        <h5 class="fw-bold">Restaurante</h5>
+                        <p class="mb-0 small">Gastronomía local e internacional</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item-container instalaciones" data-aos="fade-up" data-aos-delay="200">
+                <div class="gallery-item">
+                    <div class="d-flex align-items-center justify-content-center bg-warning text-white" style="height: 250px;">
+                        <div class="text-center">
+                            <i class="fas fa-cocktail fa-3x mb-2"></i>
+                            <p class="mb-0">Video Bar</p>
+                        </div>
+                    </div>
+                    <div class="gallery-overlay">
+                        <h5 class="fw-bold">Video Bar</h5>
+                        <p class="mb-0 small">Ambiente nocturno relajado</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item-container instalaciones" data-aos="fade-up" data-aos-delay="300">
+                <div class="gallery-item">
+                    <div class="d-flex align-items-center justify-content-center bg-info text-white" style="height: 250px;">
+                        <div class="text-center">
+                            <i class="fas fa-dumbbell fa-3x mb-2"></i>
+                            <p class="mb-0">Gimnasio</p>
+                        </div>
+                    </div>
+                    <div class="gallery-overlay">
+                        <h5 class="fw-bold">Gimnasio</h5>
+                        <p class="mb-0 small">Mantenga su rutina de ejercicio</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item-container exterior" data-aos="fade-up" data-aos-delay="400">
+                <div class="gallery-item">
+                    <div class="d-flex align-items-center justify-content-center bg-secondary text-white" style="height: 250px;">
+                        <div class="text-center">
+                            <i class="fas fa-building fa-3x mb-2"></i>
+                            <p class="mb-0">Fachada del Hotel</p>
+                        </div>
+                    </div>
+                    <div class="gallery-overlay">
+                        <h5 class="fw-bold">Fachada Principal</h5>
+                        <p class="mb-0 small">Arquitectura moderna en Lázaro Cárdenas</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item-container exterior" data-aos="fade-up" data-aos-delay="500">
+                <div class="gallery-item">
+                    <div class="d-flex align-items-center justify-content-center bg-dark text-white" style="height: 250px;">
+                        <div class="text-center">
+                            <i class="fas fa-car fa-3x mb-2"></i>
+                            <p class="mb-0">Estacionamiento</p>
+                        </div>
+                    </div>
+                    <div class="gallery-overlay">
+                        <h5 class="fw-bold">Estacionamiento</h5>
+                        <p class="mb-0 small">Amplio y seguro para huéspedes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% else %}
+        <div class="no-images-message" data-aos="fade-up">
+            <i class="fas fa-images fa-4x mb-3"></i>
+            <h3>Próximamente</h3>
+            <p class="lead">Estamos preparando una hermosa galería de imágenes para mostrarle todas nuestras instalaciones.</p>
+            <a href="{% url 'contact' %}" class="btn btn-primary">
+                <i class="fas fa-envelope me-2"></i>Contáctanos para más información
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container" data-aos="fade-up">
+        <h3 class="fw-bold mb-3">¿Le gusta lo que ve?</h3>
+        <p class="lead mb-4">Reserve ahora y viva la experiencia Hotel Yunuen</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="{% url 'bookings:booking_create' %}" class="btn btn-warning btn-lg px-4">
+                <i class="fas fa-calendar-plus me-2"></i>Reservar Ahora
+            </a>
+            <a href="{% url 'rooms:room_type_list' %}" class="btn btn-outline-light btn-lg px-4">
+                <i class="fas fa-bed me-2"></i>Ver Habitaciones
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <button class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</button>
+        <img id="lightbox-img" src="" alt="">
+        <button class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentImageIndex = 0;
+const galleryImages = [
+    {% for item in gallery_items %}
+    {
+        src: "{{ item.image.url|default:'' }}",
+        title: "{{ item.title }}",
+        description: "{{ item.description|truncatewords:10 }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+$(document).ready(function() {
+    // Filter functionality
+    $('.filter-btn').click(function() {
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        
+        const filterValue = $(this).attr('data-filter');
+        
+        if (filterValue === '*') {
+            $('.gallery-item-container').show();
+        } else {
+            $('.gallery-item-container').hide();
+            $(filterValue).show();
+        }
+        
+        // Re-trigger AOS animations
+        AOS.refresh();
+    });
+    
+    // Lazy loading for placeholder images
+    $('.gallery-item img').each(function() {
+        const $img = $(this);
+        const src = $img.attr('src');
+        
+        if (src) {
+            $img.on('load', function() {
+                $(this).parent().removeClass('loading');
+            }).on('error', function() {
+                // Replace with placeholder if image fails to load
+                $(this).parent().html(`
+                    <div class="d-flex align-items-center justify-content-center bg-secondary text-white" style="height: 250px;">
+                        <i class="fas fa-image fa-3x"></i>
+                    </div>
+                `);
+            });
+        }
+    });
+});
+
+function openLightbox(index) {
+    if (galleryImages.length > 0 && galleryImages[index] && galleryImages[index].src) {
+        currentImageIndex = index;
+        const img = galleryImages[index];
+        document.getElementById('lightbox-img').src = img.src;
+        document.getElementById('lightbox').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function changeImage(direction) {
+    currentImageIndex += direction;
+    
+    if (currentImageIndex >= galleryImages.length) {
+        currentImageIndex = 0;
+    } else if (currentImageIndex < 0) {
+        currentImageIndex = galleryImages.length - 1;
+    }
+    
+    const img = galleryImages[currentImageIndex];
+    if (img && img.src) {
+        document.getElementById('lightbox-img').src = img.src;
+    }
+}
+
+// Close lightbox with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeLightbox();
+    } else if (e.key === 'ArrowLeft') {
+        changeImage(-1);
+    } else if (e.key === 'ArrowRight') {
+        changeImage(1);
+    }
+});
+
+// Close lightbox when clicking outside image
+document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeLightbox();
+    }
+});
+</script>
+{% endblock %}

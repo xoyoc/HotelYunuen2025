@@ -1,0 +1,219 @@
+<!-- templates/bookings/booking_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reservación {{ booking.invoice_id }} - Hotel Yunuen{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-receipt"></i> Detalles de Reservación
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Estado -->
+                    <div class="mb-4">
+                        <span class="badge bg-{% if booking.payment_status == 'PAID' or booking.payment_status == 'CONFIRMED' %}success{% elif booking.payment_status == 'PENDING' %}warning{% else %}danger{% endif %} fs-6">
+                            {{ booking.get_payment_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Información de la reserva -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>ID de Reserva:</strong><br>
+                            <code>{{ booking.booking_id }}</code>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Factura:</strong><br>
+                            {{ booking.invoice_id }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Hotel:</strong><br>
+                            {{ booking.hotel.name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Habitación:</strong><br>
+                            #{{ booking.room.room_number }} - {{ booking.room.room_type.name }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Fechas -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Check-in:</strong><br>
+                            <i class="fas fa-calendar-check text-success"></i> 
+                            {{ booking.check_in_date|date:"d/m/Y" }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Check-out:</strong><br>
+                            <i class="fas fa-calendar-times text-danger"></i> 
+                            {{ booking.check_out_date|date:"d/m/Y" }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Noches:</strong><br>
+                            <i class="fas fa-moon"></i> {{ booking.total_days }} noche(s)
+                        </div>
+                    </div>
+
+                    <!-- Huéspedes -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Adultos:</strong> {{ booking.adults }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Niños:</strong> {{ booking.children }}
+                        </div>
+                    </div>
+
+                    {% if booking.special_requests %}
+                    <div class="mb-3">
+                        <strong>Solicitudes Especiales:</strong><br>
+                        <p class="text-muted">{{ booking.special_requests }}</p>
+                    </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <!-- Desglose de precios -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal ({{ booking.total_days }} noche(s) × ${{ booking.room.room_type.price_per_night }})</span>
+                            <strong>${{ booking.subtotal }}</strong>
+                        </div>
+                        
+                        {% if booking.discount_amount > 0 %}
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>
+                                <i class="fas fa-tag"></i> Descuento 
+                                {% if booking.coupon %}({{ booking.coupon.code }}){% endif %}
+                            </span>
+                            <strong>-${{ booking.discount_amount }}</strong>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Impuestos (16%)</span>
+                            <strong>${{ booking.tax_amount }}</strong>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between">
+                            <h5>Total:</h5>
+                            <h5 class="text-primary">${{ booking.total_price }}</h5>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="mt-4">
+                        <a href="{% url 'bookings:booking_invoice' booking.booking_id %}" 
+                           class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-file-pdf"></i> Descargar Comprobante
+                        </a>
+                        
+                        {% if booking.can_be_cancelled %}
+                        <button type="button" class="btn btn-outline-danger" 
+                                data-bs-toggle="modal" data-bs-target="#cancelModal">
+                            <i class="fas fa-times-circle"></i> Cancelar Reservación
+                        </button>
+                        {% endif %}
+                        
+                        {% if booking.payment_status == 'CONFIRMED' and not booking.review %}
+                        <a href="{% url 'reviews:review_create' %}?booking_id={{ booking.booking_id }}" 
+                           class="btn btn-outline-success">
+                            <i class="fas fa-star"></i> Dejar Reseña
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>
+                        Reserva realizada el {{ booking.booking_date|date:"d/m/Y H:i" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Información del hotel -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Información del Hotel</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>{{ booking.hotel.name }}</strong></p>
+                    <p class="mb-1">
+                        <i class="fas fa-map-marker-alt"></i> 
+                        {{ booking.hotel.address }}<br>
+                        {{ booking.hotel.city }}, {{ booking.hotel.state }}
+                    </p>
+                    <p class="mb-1">
+                        <i class="fas fa-phone"></i> {{ booking.hotel.phone }}
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-envelope"></i> {{ booking.hotel.email }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Horarios -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Horarios</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <strong>Check-in:</strong><br>
+                        A partir de las {{ booking.hotel.check_in_time|time:"H:i" }}
+                    </p>
+                    <p class="mb-0">
+                        <strong>Check-out:</strong><br>
+                        Hasta las {{ booking.hotel.check_out_time|time:"H:i" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de cancelación -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancelar Reservación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas cancelar esta reservación?</p>
+                <p class="text-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Esta acción no se puede deshacer.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    No, mantener reserva
+                </button>
+                <form method="post" action="{% url 'bookings:booking_cancel' booking.booking_id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        Sí, cancelar reservación
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

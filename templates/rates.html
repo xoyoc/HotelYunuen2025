@@ -1,0 +1,638 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% block title %}Tarifas - Hotel Yunuen | Lázaro Cárdenas{% endblock %}
+
+{% block extra_css %}
+<style>
+    .rates-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 80px 0 40px;
+    }
+    
+    .price-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+        background: white;
+    }
+    
+    .price-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .price-card.featured {
+        border: 3px solid #ffc107;
+        transform: scale(1.05);
+    }
+    
+    .price-card.featured::before {
+        content: 'MÁS POPULAR';
+        position: absolute;
+        top: 20px;
+        right: -30px;
+        background: #ffc107;
+        color: #000;
+        padding: 8px 40px;
+        font-size: 12px;
+        font-weight: bold;
+        transform: rotate(45deg);
+        z-index: 1;
+    }
+    
+    .price-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 30px 20px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .price-card.featured .price-header {
+        background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+        color: #000;
+    }
+    
+    .room-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .price-amount {
+        font-size: 3rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+    
+    .price-period {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 5px;
+    }
+    
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .feature-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+    }
+    
+    .feature-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .feature-list li i {
+        color: #28a745;
+        margin-right: 10px;
+        width: 20px;
+    }
+    
+    .seasonal-info {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 30px 0;
+    }
+    
+    .discount-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: #dc3545;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .amenity-icon {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-right: 8px;
+    }
+    
+    .category-header {
+        background: linear-gradient(135deg, #6f42c1 0%, #5a2d91 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 40px 0 20px;
+        text-align: center;
+    }
+    
+    .booking-widget-rates {
+        background: rgba(255,255,255,0.95);
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        padding: 25px;
+        position: sticky;
+        top: 100px;
+    }
+    
+    .comparison-table {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .comparison-table th {
+        background: #343a40;
+        color: white;
+        border: none;
+        padding: 15px;
+        font-weight: 600;
+    }
+    
+    .comparison-table td {
+        padding: 12px 15px;
+        border: none;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .check-icon {
+        color: #28a745;
+        font-size: 1.2rem;
+    }
+    
+    .times-icon {
+        color: #dc3545;
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="rates-header text-center">
+    <div class="container" data-aos="fade-up">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-tags me-3"></i>Tarifas y Planes
+        </h1>
+        <p class="lead">
+            Descubra nuestras opciones de hospedaje con las mejores tarifas en Lázaro Cárdenas, Michoacán
+        </p>
+        <div class="mt-4">
+            <span class="badge bg-warning text-dark fs-6 me-2">
+                <i class="fas fa-percent me-1"></i>Descuentos por estancia prolongada
+            </span>
+            <span class="badge bg-success fs-6">
+                <i class="fas fa-credit-card me-1"></i>Reserva sin costo adicional
+            </span>
+        </div>
+    </div>
+</section>
+
+<!-- Widget de Reserva Rápida -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="booking-widget-rates" data-aos="fade-up">
+                    <h4 class="text-center mb-3">
+                        <i class="fas fa-calculator text-primary me-2"></i>Calcule su Tarifa
+                    </h4>
+                    <form class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Check-in</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Check-out</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Adultos</label>
+                            <select class="form-select">
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Niños</label>
+                            <select class="form-select">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tarifas por Categoría -->
+{% if rooms_by_category %}
+    {% for category, rooms in rooms_by_category.items %}
+    <section class="py-5">
+        <div class="container">
+            <div class="category-header" data-aos="fade-up">
+                <h2 class="mb-2">{{ category }}</h2>
+                <p class="mb-0">Habitaciones diseñadas para su comodidad y bienestar</p>
+            </div>
+            
+            <div class="row g-4">
+                {% for room in rooms %}
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                    <div class="price-card h-100 {% if room.category == 'PREMIUM' %}featured{% endif %}">
+                        {% if room.category == 'PREMIUM' %}
+                        <div class="discount-badge">-15% Descuento</div>
+                        {% endif %}
+                        
+                        {% if room.image %}
+                        <img src="{{ room.image.url }}" alt="{{ room.name }}" class="room-image">
+                        {% else %}
+                        <div class="d-flex align-items-center justify-content-center bg-secondary text-white room-image">
+                            <i class="fas fa-bed fa-3x"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="price-header">
+                            <h4 class="fw-bold">{{ room.name }}</h4>
+                            <div class="price-amount">${{ room.price_per_night }}</div>
+                            <div class="price-period">por noche + impuestos</div>
+                            {% if room.category == 'PREMIUM' %}
+                            <small class="text-muted"><s>${{ room.price_per_night|add:200 }}</s> Precio regular</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-body p-4">
+                            <p class="text-muted mb-3">{{ room.description|truncatewords:15 }}</p>
+                            
+                            <div class="mb-3">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <i class="fas fa-user-friends text-primary"></i>
+                                        <small class="d-block">{{ room.room_capacity }} personas</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="fas fa-bed text-primary"></i>
+                                        <small class="d-block">{{ room.number_of_beds }} cama(s)</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="fas fa-ruler-combined text-primary"></i>
+                                        <small class="d-block">{% if room.size_sqm %}{{ room.size_sqm }}m²{% else %}Cómoda{% endif %}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <ul class="feature-list mb-4">
+                                {% for amenity in room.amenities.all|slice:":5" %}
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>{{ amenity.name }}</span>
+                                </li>
+                                {% empty %}
+                                <li><i class="fas fa-check"></i> WiFi gratuito</li>
+                                <li><i class="fas fa-check"></i> Aire acondicionado</li>
+                                <li><i class="fas fa-check"></i> TV por cable</li>
+                                <li><i class="fas fa-check"></i> Baño privado</li>
+                                <li><i class="fas fa-check"></i> Servicio de limpieza</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <div class="text-center">
+                                <a href="{% url 'rooms:room_type_detail' room.pk %}" class="btn btn-outline-primary btn-sm me-2">
+                                    <i class="fas fa-info-circle me-1"></i>Detalles
+                                </a>
+                                <a href="{% url 'bookings:booking_create' %}?room_type={{ room.pk }}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-calendar-plus me-1"></i>Reservar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endfor %}
+{% else %}
+<!-- Vista sin habitaciones -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center" data-aos="fade-up">
+            <i class="fas fa-bed fa-4x text-muted mb-3"></i>
+            <h3>Próximamente</h3>
+            <p class="lead text-muted">Estamos actualizando nuestras tarifas. Contáctanos para información actualizada.</p>
+            <a href="{% url 'contact' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-phone me-2"></i>Contactar Ahora
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Información Estacional -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="seasonal-info" data-aos="fade-up">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="fw-bold mb-2">
+                        <i class="fas fa-calendar-alt me-2"></i>Temporadas Especiales
+                    </h3>
+                    <p class="mb-2">
+                        <strong>Temporada Alta (Dic-Mar):</strong> +20% sobre tarifa base<br>
+                        <strong>Temporada Media (Abr-Jun, Oct-Nov):</strong> Tarifa regular<br>
+                        <strong>Temporada Baja (Jul-Sep):</strong> -15% descuento especial
+                    </p>
+                    <small>*Los precios pueden variar según disponibilidad y eventos especiales</small>
+                </div>
+                <div class="col-md-4 text-center">
+                    <i class="fas fa-sun fa-3x mb-3"></i>
+                    <p class="fw-bold mb-0">¡Mejor época para visitar!</p>
+                    <small>Clima perfecto todo el año</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tabla Comparativa -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="fw-bold">Compare Nuestras Habitaciones</h2>
+            <p class="lead text-muted">Encuentre la opción perfecta para su estancia</p>
+        </div>
+        
+        <div class="comparison-table" data-aos="fade-up">
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th class="text-center">Básica</th>
+                            <th class="text-center">Estándar</th>
+                            <th class="text-center">Premium</th>
+                            <th class="text-center">De Lujo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Precio por noche (desde)</strong></td>
+                            <td class="text-center">$800 MXN</td>
+                            <td class="text-center">$1,200 MXN</td>
+                            <td class="text-center">$1,800 MXN</td>
+                            <td class="text-center">$2,500 MXN</td>
+                        </tr>
+                        <tr>
+                            <td>WiFi gratuito</td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Aire acondicionado</td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>TV por cable</td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Minibar</td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Balcón privado</td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Servicio a la habitación 24h</td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Jacuzzi privado</td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-times times-icon"></i></td>
+                            <td class="text-center"><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Políticas y Descuentos -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-6" data-aos="fade-right">
+                <div class="card border-0 h-100 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="text-primary mb-3">
+                            <i class="fas fa-percentage me-2"></i>Descuentos Especiales
+                        </h4>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <strong>Estancia 7+ noches:</strong> 15% descuento
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <strong>Reserva anticipada (30+ días):</strong> 10% descuento
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <strong>Huéspedes frecuentes:</strong> Hasta 20% descuento
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <strong>Grupos (10+ habitaciones):</strong> Descuento especial
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" data-aos="fade-left">
+                <div class="card border-0 h-100 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="text-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>Políticas de Precios
+                        </h4>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-clock text-warning me-2"></i>
+                                Check-in: 15:00 hrs | Check-out: 12:00 hrs
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-credit-card text-warning me-2"></i>
+                                Los precios incluyen IVA (16%)
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-ban text-warning me-2"></i>
+                                Cancelación gratuita hasta 24h antes
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-child text-warning me-2"></i>
+                                Niños menores de 12 años: Sin costo adicional
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container" data-aos="fade-up">
+        <h3 class="fw-bold mb-3">¿Encontró la tarifa perfecta?</h3>
+        <p class="lead mb-4">
+            Reserve ahora y asegure su habitación con las mejores tarifas garantizadas
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="{% url 'bookings:booking_create' %}" class="btn btn-warning btn-lg px-5">
+                <i class="fas fa-calendar-check me-2"></i>Reservar Ahora
+            </a>
+            <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg px-5">
+                <i class="fas fa-phone me-2"></i>Llamar para Reservar
+            </a>
+        </div>
+        <div class="mt-3">
+            <small>
+                <i class="fas fa-shield-alt me-1"></i>
+                Reserva segura • Sin comisiones ocultas • Mejor precio garantizado
+            </small>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    $('input[type="date"]').attr('min', today);
+    
+    // Update checkout minimum when checkin changes
+    $('input[type="date"]').first().change(function() {
+        const checkIn = new Date($(this).val());
+        const nextDay = new Date(checkIn.getTime() + 24 * 60 * 60 * 1000);
+        const minCheckout = nextDay.toISOString().split('T')[0];
+        $('input[type="date"]').last().attr('min', minCheckout);
+    });
+    
+    // Handle rate calculator form
+    $('.booking-widget-rates form').on('submit', function(e) {
+        e.preventDefault();
+        
+        const checkIn = $('input[type="date"]').first().val();
+        const checkOut = $('input[type="date"]').last().val();
+        const adults = $('select').first().val();
+        const children = $('select').last().val();
+        
+        if (!checkIn || !checkOut) {
+            alert('Por favor, seleccione las fechas de su estancia');
+            return;
+        }
+        
+        // Calculate nights
+        const checkInDate = new Date(checkIn);
+        const checkOutDate = new Date(checkOut);
+        const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+        const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        
+        if (nights <= 0) {
+            alert('La fecha de check-out debe ser posterior a la de check-in');
+            return;
+        }
+        
+        // Redirect to booking page with parameters
+        const params = new URLSearchParams({
+            'check_in': checkIn,
+            'check_out': checkOut,
+            'adults': adults,
+            'children': children
+        });
+        
+        window.location.href = '{% url "bookings:booking_create" %}?' + params.toString();
+    });
+    
+    // Smooth scroll for anchor links
+    $('a[href^="#"]').on('click', function(e) {
+        e.preventDefault();
+        const target = $($(this).attr('href'));
+        if (target.length) {
+            $('html, body').animate({
+                scrollTop: target.offset().top - 100
+            }, 500);
+        }
+    });
+    
+    // Add hover effects to price cards
+    $('.price-card').hover(
+        function() {
+            $(this).find('.btn').addClass('pulse');
+        },
+        function() {
+            $(this).find('.btn').removeClass('pulse');
+        }
+    );
+});
+
+// Add some dynamic pricing effects
+function updatePriceDisplay() {
+    $('.price-amount').each(function() {
+        const basePrice = parseInt($(this).text().replace('$', '').replace(',', ''));
+        const isWeekend = new Date().getDay() % 6 === 0;
+        
+        if (isWeekend) {
+            const weekendPrice = Math.round(basePrice * 1.1);
+            $(this).html(`$${weekendPrice.toLocaleString()}`);
+            $(this).after('<small class="text-warning d-block">Tarifa fin de semana</small>');
+        }
+    });
+}
+
+// Call on page load
+$(document).ready(function() {
+    setTimeout(updatePriceDisplay, 1000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% block title %}Hotel Yunuen - Lázaro Cárdenas, Michoacán | Inicio{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), 
+                    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%23336699" width="1200" height="800"/><rect fill="%234477aa" x="0" y="0" width="600" height="400"/><rect fill="%235588bb" x="600" y="400" width="600" height="400"/></svg>');
+        background-size: cover;
+        background-position: center;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+    
+    .hero-content {
+        z-index: 2;
+    }
+    
+    .feature-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, #ffc107, #ff8c00);
+        border-radius: 2px;
+    }
+    
+    .booking-widget {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .stats-counter {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #1e3c72;
+    }
+    
+    .review-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease;
+    }
+    
+    .review-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="hero-content text-white">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Bienvenido a Hotel Yunuen
+                    </h1>
+                    <p class="lead mb-4">
+                        En el corazón de Lázaro Cárdenas, Michoacán. Disfrute del bello Pacífico Mexicano 
+                        con excelente servicio, ubicación privilegiada y tarifas accesibles.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{% url 'bookings:booking_create' %}" class="btn btn-warning btn-lg px-4">
+                            <i class="fas fa-calendar-plus me-2"></i>Reservar Ahora
+                        </a>
+                        <a href="{% url 'gallery' %}" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-images me-2"></i>Ver Galería
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="booking-widget p-4 mt-4 mt-lg-0">
+                    <h4 class="text-center mb-4 text-dark">
+                        <i class="fas fa-search text-primary me-2"></i>Verificar Disponibilidad
+                    </h4>
+                    <form id="availabilityForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Check-in</label>
+                                <input type="date" class="form-control" name="check_in" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Check-out</label>
+                                <input type="date" class="form-control" name="check_out" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Adultos</label>
+                                <select class="form-select" name="adults">
+                                    <option value="1">1 Adulto</option>
+                                    <option value="2" selected>2 Adultos</option>
+                                    <option value="3">3 Adultos</option>
+                                    <option value="4">4 Adultos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Niños</label>
+                                <select class="form-select" name="children">
+                                    <option value="0" selected>Sin niños</option>
+                                    <option value="1">1 Niño</option>
+                                    <option value="2">2 Niños</option>
+                                    <option value="3">3 Niños</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-4 py-2">
+                            <i class="fas fa-search me-2"></i>Buscar Habitaciones
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Características del Hotel -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">¿Por qué elegir Hotel Yunuen?</h2>
+            <p class="lead text-muted">Ubicación excepcional y servicios de calidad para su estancia perfecta</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-map-marker-alt text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5>Ubicación Privilegiada</h5>
+                    <p class="text-muted">En la principal avenida de Lázaro Cárdenas, cerca del puerto y playas.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-utensils text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5>Gastronomía Local</h5>
+                    <p class="text-muted">Disfrute la auténtica cocina michoacana y platillos internacionales.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-cocktail text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5>Video Bar</h5>
+                    <p class="text-muted">Relájese en nuestro acogedor video bar con ambiente nocturno.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card card h-100 text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-briefcase text-info" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5>Viajeros de Negocios</h5>
+                    <p class="text-muted">Facilidades completas para el ejecutivo moderno.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Habitaciones Destacadas -->
+{% if featured_rooms %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">Nuestras Habitaciones</h2>
+            <p class="lead text-muted">Confort y elegancia para una estancia inolvidable</p>
+        </div>
+        <div class="row g-4">
+            {% for room in featured_rooms %}
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    {% if room.image %}
+                    <img src="{{ room.image.url }}" class="card-img-top" alt="{{ room.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-primary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-bed text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">{{ room.name }}</h5>
+                            <span class="badge bg-secondary">{{ room.get_category_display }}</span>
+                        </div>
+                        <p class="card-text text-muted">{{ room.description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="text-primary mb-0">${{ room.price_per_night }}</h4>
+                                <small class="text-muted">por noche</small>
+                            </div>
+                            <a href="{% url 'rooms:room_type_detail' room.pk %}" class="btn btn-outline-primary">
+                                Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4" data-aos="fade-up">
+            <a href="{% url 'rooms:room_type_list' %}" class="btn btn-primary btn-lg px-4">
+                <i class="fas fa-bed me-2"></i>Ver Todas las Habitaciones
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Estadísticas -->
+{% if stats %}
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="stats-counter">{{ stats.total_reviews|default:"50" }}+</div>
+                <p class="mb-0">Reseñas de Huéspedes</p>
+            </div>
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="stats-counter">{{ stats.average_rating|floatformat:1|default:"4.5" }}</div>
+                <p class="mb-0">Calificación Promedio</p>
+            </div>
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="stats-counter">25+</div>
+                <p class="mb-0">Años de Experiencia</p>
+            </div>
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="stats-counter">{{ stats.recommendation_percentage|floatformat:0|default:"95" }}%</div>
+                <p class="mb-0">Recomendación</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Reseñas Destacadas -->
+{% if featured_reviews %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">Lo que dicen nuestros huéspedes</h2>
+            <p class="lead text-muted">Experiencias reales de quienes nos han visitado</p>
+        </div>
+        <div class="row g-4">
+            {% for review in featured_reviews %}
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                <div class="review-card card h-100 p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                             style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ review.user.get_full_name|default:review.user.username }}</h6>
+                            <div class="text-warning">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted">{{ review.review_text|truncatewords:20 }}</p>
+                    <small class="text-muted">{{ review.review_date|date:"F Y" }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4" data-aos="fade-up">
+            <a href="{% url 'reviews:review_list' %}" class="btn btn-outline-primary px-4">
+                <i class="fas fa-star me-2"></i>Ver Todas las Reseñas
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action -->
+<section class="py-5 bg-warning">
+    <div class="container text-center" data-aos="fade-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold text-dark mb-3">¿Listo para su próxima aventura?</h2>
+                <p class="lead text-dark mb-4">
+                    Reserve ahora y disfrute de la hospitalidad michoacana en el corazón de Lázaro Cárdenas.
+                    A minutos de las mejores playas del Pacífico Mexicano.
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{% url 'bookings:booking_create' %}" class="btn btn-dark btn-lg px-5">
+                        <i class="fas fa-calendar-check me-2"></i>Reservar Ahora
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-dark btn-lg px-5">
+                        <i class="fas fa-phone me-2"></i>Contactanos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    $('input[name="check_in"]').attr('min', today);
+    
+    // Update checkout minimum when checkin changes
+    $('input[name="check_in"]').change(function() {
+        const checkIn = new Date($(this).val());
+        const nextDay = new Date(checkIn.getTime() + 24 * 60 * 60 * 1000);
+        const minCheckout = nextDay.toISOString().split('T')[0];
+        $('input[name="check_out"]').attr('min', minCheckout);
+    });
+    
+    // Handle availability form submission
+    $('#availabilityForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            'check_in': $('input[name="check_in"]').val(),
+            'check_out': $('input[name="check_out"]').val(),
+            'guests': parseInt($('select[name="adults"]').val()) + parseInt($('select[name="children"]').val())
+        };
+        
+        if (!formData.check_in || !formData.check_out) {
+            alert('Por favor, seleccione las fechas de check-in y check-out');
+            return;
+        }
+        
+        // Redirect to rooms page with parameters
+        const params = new URLSearchParams(formData);
+        window.location.href = '{% url "rooms:room_type_list" %}?' + params.toString();
+    });
+});
+</script>
+{% endblock %}
