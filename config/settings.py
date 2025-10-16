@@ -29,7 +29,13 @@ SECRET_KEY = env.str('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    '.monkfish-app-zamvc.ondigitalocean.app',
+    '.digitaloceanspaces.com',
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0'
+]
 
 
 # Application definition
@@ -140,3 +146,9 @@ CACHES = {
         }
     }
 }
+# Seguridad
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+CSRF_TRUSTED_ORIGINS = [
+    'https://monkfish-app-zamvc.ondigitalocean.app/',
+]
