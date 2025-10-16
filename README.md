@@ -293,7 +293,7 @@ Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detall
 ## 📞 Contacto
 
 **Hotel Yunuen**
-- Dirección: Av. Principal 123, Pátzcuaro, Michoacán
+- Dirección: Av. Principal 123, Cd. Lázaro Cárdenas, Michoacán
 - Teléfono: +52 434 342 0000
 - Email: info@hotelyunuen.com
 
